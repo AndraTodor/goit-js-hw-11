@@ -2,22 +2,43 @@ import { fetchImages } from './api.js';
 
 const form = document.querySelector('#search-form');
 const gallery = document.querySelector('.gallery');
+const loadMoreButton = document.querySelector('.load-more');
+
+let page = 1;
+let query = '';
 
 const onFormSubmit = e => {
   e.preventDefault();
-  const query = e.currentTarget.elements.searchQuery.value;
+  query = e.currentTarget.elements.searchQuery.value;
   console.log('Form submitted with query:', query);
+  page = 1; // Reset page to 1 for a new search
   onSearch(query);
 };
 
 const onSearch = async query => {
-  const images = await fetchImages(query);
+  const images = await fetchImages(query, page); // Pass the current page
   console.log(images);
-  renderGallery(images.hits);
+  renderGallery(images.hits, true); // Clear previous results for a new search
+  if (images.hits.length < 20) {
+    loadMoreButton.style.display = 'none'; // Hide the buuton if there are no more images to load
+  } else {
+    loadMoreButton.style.display = 'block'; //show the button
+  }
 };
 
-const renderGallery = images => {
-  gallery.innerHTML = ''; // Clear previous results
+const loadMore = async () => {
+  page++;
+  const images = await fetchImages(query, page);
+  renderGallery(images.hits, false); // Append new results to the gallery
+  if (images.hits.length < 20) {
+    loadMoreButton.style.display = 'none'; // Hide the button if there are no more images
+  }
+};
+
+const renderGallery = (images, reset) => {
+  if (reset) {
+    gallery.innerHTML = ''; // Clear previous results only if it's a new search
+  }
   const markup = images
     .map(
       ({
@@ -54,5 +75,4 @@ const renderGallery = images => {
 };
 
 form.addEventListener('submit', onFormSubmit);
-
-console.log('Script loaded');
+loadMoreButton.addEventListener('click', loadMore);

@@ -12,6 +12,8 @@ export const fetchImages = async (query, page = 1) => {
         image_type: 'photo',
         orientation: 'horizontal',
         safesearch: true,
+        page,
+        per_page: 20,
       },
     });
     return response.data;
