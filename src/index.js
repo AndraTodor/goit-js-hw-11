@@ -1,4 +1,7 @@
 import { fetchImages } from './api.js';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const form = document.querySelector('#search-form');
 const gallery = document.querySelector('.gallery');
@@ -6,6 +9,7 @@ const loadMoreButton = document.querySelector('.load-more');
 
 let page = 1;
 let query = '';
+let lightbox;
 
 const onFormSubmit = e => {
   e.preventDefault();
@@ -24,6 +28,16 @@ const onSearch = async query => {
   } else {
     loadMoreButton.style.display = 'block'; //show the button
   }
+  if (images.totalHits > 0) {
+    Notify.success(`Hooray! We found ${images.totalHits} images.`);
+  } else {
+    Notify.failure('Sorry, no images found. Please try again.');
+  }
+  if (lightbox) {
+    lightbox.refresh();
+  } else {
+    lightbox = new SimpleLightbox('.gallery a');
+  }
 };
 
 const loadMore = async () => {
@@ -32,6 +46,9 @@ const loadMore = async () => {
   renderGallery(images.hits, false); // Append new results to the gallery
   if (images.hits.length < 20) {
     loadMoreButton.style.display = 'none'; // Hide the button if there are no more images
+  }
+  if (lightbox) {
+    lightbox.refresh();
   }
 };
 
