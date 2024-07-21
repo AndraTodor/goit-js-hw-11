@@ -5,7 +5,8 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const form = document.querySelector('#search-form');
 const gallery = document.querySelector('.gallery');
-const loadMoreButton = document.querySelector('.load-more');
+// const loadMoreButton = document.querySelector('.load-more');
+const sentinel = document.querySelector('#sentinel');
 
 let page = 1;
 let query = '';
@@ -92,17 +93,33 @@ const renderGallery = (images, reset) => {
   gallery.insertAdjacentHTML('beforeend', markup);
 };
 
-const smoothScroll = () => {
-  setTimeout(() => {
-    const { height: cardHeight } = document
-      .querySelector('.gallery')
-      .firstElementChild.getBoundingClientRect();
-    window.scrollBy({
-      top: cardHeight * 3,
-      behavior: 'smooth',
-    });
-  }, 500); // Adjust delay as needed
+// LOAD-MORE BUTTON
+// const smoothScroll = () => {
+//   setTimeout(() => {
+//     const { height: cardHeight } = document
+//       .querySelector('.gallery')
+//       .firstElementChild.getBoundingClientRect();
+//     window.scrollBy({
+//       top: cardHeight * 3,
+//       behavior: 'smooth',
+//     });
+//   }, 500); // Adjust delay as needed
+// };
+
+// Intersection Observer callback
+const onIntersection = entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && query) {
+      loadMore();
+    }
+  });
 };
 
+// Create Intersection Observer
+const observer = new IntersectionObserver(onIntersection, {
+  rootMargin: '200px',
+});
+observer.observe(sentinel); // Observe the sentinel element
+
 form.addEventListener('submit', onFormSubmit);
-loadMoreButton.addEventListener('click', loadMore);
+// loadMoreButton.addEventListener('click', loadMore);
