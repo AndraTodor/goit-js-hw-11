@@ -50,6 +50,7 @@ const loadMore = async () => {
   if (lightbox) {
     lightbox.refresh();
   }
+  smoothScroll();
 };
 
 const renderGallery = (images, reset) => {
@@ -89,6 +90,18 @@ const renderGallery = (images, reset) => {
     )
     .join('');
   gallery.insertAdjacentHTML('beforeend', markup);
+};
+
+const smoothScroll = () => {
+  setTimeout(() => {
+    const { height: cardHeight } = document
+      .querySelector('.gallery')
+      .firstElementChild.getBoundingClientRect();
+    window.scrollBy({
+      top: cardHeight * 3,
+      behavior: 'smooth',
+    });
+  }, 500); // Adjust delay as needed
 };
 
 form.addEventListener('submit', onFormSubmit);
